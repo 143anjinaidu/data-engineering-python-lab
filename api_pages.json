@@ -1,0 +1,34 @@
+{
+  "pages": [
+    {
+      "data": [
+        {
+          "record_id": "a1",
+          "status": "ok",
+          "amount": 12
+        },
+        {
+          "record_id": "a2",
+          "status": "ok",
+          "amount": 18
+        }
+      ],
+      "next_page": "page2"
+    },
+    {
+      "data": [
+        {
+          "record_id": "a2",
+          "status": "ok",
+          "amount": 18
+        },
+        {
+          "record_id": "a3",
+          "status": "failed",
+          "amount": "bad"
+        }
+      ],
+      "next_page": null
+    }
+  ]
+}

@@ -1,0 +1,411 @@
+{
+  "exercises": [
+    {
+      "id": 1,
+      "title": "Read a TXT log",
+      "level": "Beginner",
+      "category": "File handling",
+      "prompt": "Read a text log and count non-empty lines.",
+      "starter": "from pathlib import Path\ntext = '''2026-01-01 INFO started\n\n2026-01-01 WARN retry\n2026-01-01 INFO done'''\nlines = [line for line in text.splitlines() if line.strip()]\nprint('non_empty_lines:', len(lines))",
+      "expected": "non_empty_lines: 3",
+      "hint": "Use splitlines(), then filter whitespace-only lines.",
+      "explanation": "splitlines() creates lines; strip() detects blank lines."
+    },
+    {
+      "id": 2,
+      "title": "Parse a CSV file",
+      "level": "Beginner",
+      "category": "CSV",
+      "prompt": "Read CSV rows using Python's built-in csv module.",
+      "starter": "import csv, io\nraw = 'id,name,amount\\n1,Asha,12.5\\n2,Ravi,8.0\\n'\nrows = list(csv.DictReader(io.StringIO(raw)))\nprint(rows[0]['name'], sum(float(r['amount']) for r in rows))",
+      "expected": "Asha 20.5",
+      "hint": "Convert amount strings to float before summing.",
+      "explanation": "CSV fields are strings by default; DictReader maps headers to fields."
+    },
+    {
+      "id": 3,
+      "title": "Write a CSV report",
+      "level": "Beginner",
+      "category": "CSV",
+      "prompt": "Write transformed rows to a CSV string.",
+      "starter": "import csv, io\nout = io.StringIO()\nw = csv.DictWriter(out, fieldnames=['region','total'])\nw.writeheader(); w.writerow({'region':'South','total':42})\nprint(out.getvalue().strip())",
+      "expected": "region,total\nSouth,42",
+      "hint": "Create a StringIO buffer and use DictWriter.",
+      "explanation": "StringIO makes a file-like object for a browser exercise."
+    },
+    {
+      "id": 4,
+      "title": "Read JSON records",
+      "level": "Beginner",
+      "category": "JSON",
+      "prompt": "Parse JSON and extract active users.",
+      "starter": "import json\nraw = '[{\"id\":1,\"active\":true},{\"id\":2,\"active\":false},{\"id\":3,\"active\":true}]'\nrows = json.loads(raw)\nprint([r['id'] for r in rows if r['active']])",
+      "expected": "[1, 3]",
+      "hint": "Use json.loads(), then filter on active.",
+      "explanation": "JSON booleans become Python True/False."
+    },
+    {
+      "id": 5,
+      "title": "Write JSON safely",
+      "level": "Beginner",
+      "category": "JSON",
+      "prompt": "Serialize a pipeline summary with readable indentation.",
+      "starter": "import json\nsummary = {'rows_read': 120, 'rows_rejected': 3, 'status': 'ok'}\nprint(json.dumps(summary, indent=2, sort_keys=True))",
+      "expected": "{\n  \"rows_read\": 120,\n  \"rows_rejected\": 3,\n  \"status\": \"ok\"\n}",
+      "hint": "Use json.dumps(..., indent=2, sort_keys=True).",
+      "explanation": "Structured summaries are easy for downstream tools to consume."
+    },
+    {
+      "id": 6,
+      "title": "Handle missing CSV values",
+      "level": "Beginner",
+      "category": "Data cleaning",
+      "prompt": "Replace blank customer names with Unknown and count them.",
+      "starter": "import csv, io\nraw='id,name\\n1,Asha\\n2,\\n3,Ravi\\n'\nrows=list(csv.DictReader(io.StringIO(raw)))\nmissing=0\nfor r in rows:\n    if not r['name'].strip(): r['name']='Unknown'; missing += 1\nprint('missing:', missing, '| names:', [r['name'] for r in rows])",
+      "expected": "missing: 1 | names: ['Asha', 'Unknown', 'Ravi']",
+      "hint": "Check strip() so spaces-only values are also treated as missing.",
+      "explanation": "Normalize missing values before joins or aggregations."
+    },
+    {
+      "id": 7,
+      "title": "Deduplicate records",
+      "level": "Beginner",
+      "category": "Data cleaning",
+      "prompt": "Keep the latest occurrence of each event_id.",
+      "starter": "rows=[{'event_id':'a','value':2},{'event_id':'b','value':5},{'event_id':'a','value':9}]\nlatest={r['event_id']:r for r in rows}\nprint(list(latest.values()))",
+      "expected": "[{'event_id': 'a', 'value': 9}, {'event_id': 'b', 'value': 5}]",
+      "hint": "Use a dictionary keyed by event_id; later rows overwrite earlier rows.",
+      "explanation": "For production, define ordering explicitly using event timestamps."
+    },
+    {
+      "id": 8,
+      "title": "Validate numeric fields",
+      "level": "Beginner",
+      "category": "Validation",
+      "prompt": "Split rows into valid amounts and rejects.",
+      "starter": "rows=['12.5','bad','0','-4']\nvalid=[]; rejects=[]\nfor value in rows:\n    try:\n        amount=float(value)\n        if amount < 0: raise ValueError('negative amount')\n        valid.append(amount)\n    except ValueError:\n        rejects.append(value)\nprint('valid:', valid, 'rejected:', rejects)",
+      "expected": "valid: [12.5, 0.0] rejected: ['bad', '-4']",
+      "hint": "Convert inside try/except and add a business-rule check.",
+      "explanation": "Keep rejected records for investigation instead of silently dropping them."
+    },
+    {
+      "id": 9,
+      "title": "Use functions for transforms",
+      "level": "Beginner",
+      "category": "Transformation",
+      "prompt": "Create a reusable function to normalize emails.",
+      "starter": "def normalize_email(value):\n    return value.strip().lower() if value else None\nprint(normalize_email('  USER@Example.COM '))",
+      "expected": "user@example.com",
+      "hint": "Strip whitespace and lowercase the value.",
+      "explanation": "Reusable transformations make ETL logic easier to test."
+    },
+    {
+      "id": 10,
+      "title": "Use pathlib paths",
+      "level": "Beginner",
+      "category": "File handling",
+      "prompt": "Build a platform-independent path for a daily extract.",
+      "starter": "from pathlib import Path\npath = Path('data') / 'orders' / '2026-10-29.csv'\nprint(path.as_posix())",
+      "expected": "data/orders/2026-10-29.csv",
+      "hint": "Join path segments with Path rather than manually adding slashes.",
+      "explanation": "Pathlib handles platform-specific separators."
+    },
+    {
+      "id": 11,
+      "title": "Pandas: inspect a dataset",
+      "level": "Beginner",
+      "category": "Pandas",
+      "prompt": "Create a DataFrame and inspect shape and column names.",
+      "starter": "import pandas as pd\ndf = pd.DataFrame({'order_id':[1,2,3], 'amount':[10,20,30]})\nprint('shape:', df.shape)\nprint('columns:', list(df.columns))",
+      "expected": "shape: (3, 2)\ncolumns: ['order_id', 'amount']",
+      "hint": "Use shape and columns for a fast first look.",
+      "explanation": "Profiling is a useful first step in every ingestion job."
+    },
+    {
+      "id": 12,
+      "title": "Pandas: clean column names",
+      "level": "Beginner",
+      "category": "Pandas",
+      "prompt": "Standardize column names to lowercase snake_case.",
+      "starter": "import pandas as pd\ndf=pd.DataFrame({'Order ID':[1], ' Customer Name ':['Asha']})\ndf.columns=[c.strip().lower().replace(' ','_') for c in df.columns]\nprint(list(df.columns))",
+      "expected": "['order_id', 'customer_name']",
+      "hint": "Strip whitespace, lowercase, and replace spaces with underscores.",
+      "explanation": "Consistent names reduce fragile downstream references."
+    },
+    {
+      "id": 13,
+      "title": "Pandas: filter rows",
+      "level": "Beginner",
+      "category": "Pandas",
+      "prompt": "Keep completed orders over 100.",
+      "starter": "import pandas as pd\ndf=pd.DataFrame({'status':['complete','pending','complete'],'amount':[120,300,80]})\nresult=df[(df.status=='complete') & (df.amount>100)]\nprint(result[['status','amount']].to_dict('records'))",
+      "expected": "[{'status': 'complete', 'amount': 120}]",
+      "hint": "Combine boolean conditions with parentheses and &.",
+      "explanation": "Vectorized filters are clearer and faster than row loops."
+    },
+    {
+      "id": 14,
+      "title": "Pandas: fill missing values",
+      "level": "Beginner",
+      "category": "Pandas",
+      "prompt": "Fill missing quantity with zero and report how many were missing.",
+      "starter": "import pandas as pd\ndf=pd.DataFrame({'sku':['A','B','C'],'qty':[2,None,5]})\nmissing=int(df.qty.isna().sum())\ndf['qty']=df.qty.fillna(0).astype(int)\nprint('filled:', missing, '| qty:', df.qty.tolist())",
+      "expected": "filled: 1 | qty: [2, 0, 5]",
+      "hint": "Count nulls before filling them.",
+      "explanation": "Choose defaults based on business meaning; zero is not always correct."
+    },
+    {
+      "id": 15,
+      "title": "Pandas: group and aggregate",
+      "level": "Beginner",
+      "category": "Pandas",
+      "prompt": "Calculate revenue by region.",
+      "starter": "import pandas as pd\ndf=pd.DataFrame({'region':['East','West','East'],'revenue':[10,7,15]})\nresult=df.groupby('region', as_index=False).revenue.sum().sort_values('region')\nprint(result.to_dict('records'))",
+      "expected": "[{'region': 'East', 'revenue': 25}, {'region': 'West', 'revenue': 7}]",
+      "hint": "Use groupby() with sum().",
+      "explanation": "Aggregations are common warehouse-ready transformations."
+    },
+    {
+      "id": 16,
+      "title": "Pandas: parse dates",
+      "level": "Intermediate",
+      "category": "Pandas",
+      "prompt": "Parse dates and keep records on or after 2026-01-01.",
+      "starter": "import pandas as pd\ndf=pd.DataFrame({'id':[1,2,3], 'date':['2025-12-31','2026-01-02','bad']})\ndf['date']=pd.to_datetime(df.date, errors='coerce')\nresult=df[df.date >= '2026-01-01']\nprint(result.id.tolist(), '| invalid_dates:', int(df.date.isna().sum()))",
+      "expected": "[2] | invalid_dates: 1",
+      "hint": "Use errors='coerce' and count resulting NaT values.",
+      "explanation": "Track invalid date counts so bad source data is visible."
+    },
+    {
+      "id": 17,
+      "title": "Pandas: merge dimensions",
+      "level": "Intermediate",
+      "category": "Pandas",
+      "prompt": "Enrich orders with customer names; preserve unmatched orders.",
+      "starter": "import pandas as pd\norders=pd.DataFrame({'customer_id':[1,2,3],'amount':[10,20,30]})\ncustomers=pd.DataFrame({'customer_id':[1,2],'name':['Asha','Ravi']})\nout=orders.merge(customers,on='customer_id',how='left')\nprint(out[['customer_id','name']].fillna('UNKNOWN').to_dict('records'))",
+      "expected": "[{'customer_id': 1, 'name': 'Asha'}, {'customer_id': 2, 'name': 'Ravi'}, {'customer_id': 3, 'name': 'UNKNOWN'}]",
+      "hint": "Use a left merge so no order disappears.",
+      "explanation": "Check unmatched keys after joins."
+    },
+    {
+      "id": 18,
+      "title": "Pandas: detect outliers",
+      "level": "Intermediate",
+      "category": "Pandas",
+      "prompt": "Flag rows with negative or implausibly high amounts.",
+      "starter": "import pandas as pd\ndf=pd.DataFrame({'id':[1,2,3,4],'amount':[10,-2,50,99999]})\nbad=df[(df.amount<0)|(df.amount>1000)]\nprint(bad.id.tolist())",
+      "expected": "[2, 4]",
+      "hint": "Write explicit domain rules before choosing statistical outlier methods.",
+      "explanation": "Business constraints can be more useful than generic outlier formulas."
+    },
+    {
+      "id": 19,
+      "title": "REST API: request pattern",
+      "level": "Beginner",
+      "category": "APIs",
+      "prompt": "Practice parsing a response payload shaped like a REST API result.",
+      "starter": "import json\nresponse='{\"data\":[{\"id\":101,\"status\":\"ok\"},{\"id\":102,\"status\":\"failed\"}],\"next_page\":null}'\npayload=json.loads(response)\nprint('records:', len(payload['data']), '| failed:', sum(r['status']=='failed' for r in payload['data']))",
+      "expected": "records: 2 | failed: 1",
+      "hint": "Treat response bodies as untrusted JSON and validate expected keys.",
+      "explanation": "The browser sandbox has no unrestricted network access; this exercise uses a fixture."
+    },
+    {
+      "id": 20,
+      "title": "REST API: pagination",
+      "level": "Intermediate",
+      "category": "APIs",
+      "prompt": "Combine records from multiple page responses.",
+      "starter": "pages=[{'items':[1,2],'next':'p2'},{'items':[3],'next':None}]\nall_items=[]\nfor page in pages: all_items.extend(page['items'])\nprint(all_items)",
+      "expected": "[1, 2, 3]",
+      "hint": "Accumulate each page's items until the next-page marker is empty.",
+      "explanation": "Real clients should also handle rate limits, retries, and page tokens."
+    },
+    {
+      "id": 21,
+      "title": "Retry transient failures",
+      "level": "Intermediate",
+      "category": "Error handling",
+      "prompt": "Simulate a transient failure and stop after a bounded number of attempts.",
+      "starter": "responses=['timeout','timeout','ok']\nattempts=0\nfor response in responses:\n    attempts += 1\n    if response=='ok': break\nprint('attempts:', attempts, '| success:', response=='ok')",
+      "expected": "attempts: 3 | success: True",
+      "hint": "Keep retries bounded; add backoff in a real service.",
+      "explanation": "Never retry every error blindly; distinguish transient from permanent failures."
+    },
+    {
+      "id": 22,
+      "title": "Logging pipeline stages",
+      "level": "Beginner",
+      "category": "Logging",
+      "prompt": "Log a simple ingestion stage and a row count.",
+      "starter": "import logging\nlogging.basicConfig(level=logging.INFO, format='%(levelname)s:%(message)s')\nlogger=logging.getLogger('etl')\nrows=[1,2,3]\nlogger.info('loaded_rows=%s', len(rows))\nprint('pipeline complete')",
+      "expected": "INFO:loaded_rows=3\npipeline complete",
+      "hint": "Use parameterized logging rather than string concatenation.",
+      "explanation": "Logs should report counts and context, not secrets or whole sensitive rows."
+    },
+    {
+      "id": 23,
+      "title": "Debug with assertions",
+      "level": "Beginner",
+      "category": "Debugging",
+      "prompt": "Assert that transformed data meets a basic invariant.",
+      "starter": "rows=[{'id':1,'amount':10},{'id':2,'amount':0}]\nassert all('id' in r for r in rows)\nassert all(r['amount'] >= 0 for r in rows)\nprint('checks passed')",
+      "expected": "checks passed",
+      "hint": "Write assertions for invariants that must always hold.",
+      "explanation": "Use explicit validation errors for production data-quality failures."
+    },
+    {
+      "id": 24,
+      "title": "ETL: extract transform load",
+      "level": "Intermediate",
+      "category": "ETL",
+      "prompt": "Build a tiny ETL flow with a reject count.",
+      "starter": "source=[{'id':'1','amount':'10'},{'id':'2','amount':'bad'},{'id':'3','amount':'5'}]\nvalid=[]; rejects=[]\nfor r in source:\n    try: valid.append({'id':int(r['id']),'amount':float(r['amount'])})\n    except (ValueError,KeyError): rejects.append(r)\ntotal=sum(r['amount'] for r in valid)\nprint('loaded:',len(valid),'| rejected:',len(rejects),'| total:',total)",
+      "expected": "loaded: 2 | rejected: 1 | total: 15.0",
+      "hint": "Separate extraction, transformation, and load steps into functions as pipelines grow.",
+      "explanation": "Make each stage measurable and keep rejects inspectable."
+    },
+    {
+      "id": 25,
+      "title": "Batch processing",
+      "level": "Intermediate",
+      "category": "Batching",
+      "prompt": "Process 10 records in batches of three.",
+      "starter": "records=list(range(1,11))\nbatch_size=3\nbatches=[records[i:i+batch_size] for i in range(0,len(records),batch_size)]\nprint('batch_sizes:',[len(b) for b in batches], '| sum:',sum(sum(b) for b in batches))",
+      "expected": "batch_sizes: [3, 3, 3, 1] | sum: 55",
+      "hint": "Slice by batch_size and allow the final batch to be smaller.",
+      "explanation": "Bounded batches reduce peak memory use."
+    },
+    {
+      "id": 26,
+      "title": "Idempotent load",
+      "level": "Intermediate",
+      "category": "ETL",
+      "prompt": "Upsert by business key so replaying a batch does not duplicate rows.",
+      "starter": "target={1:{'id':1,'amount':10}}\nincoming=[{'id':1,'amount':12},{'id':2,'amount':7}]\nfor row in incoming: target[row['id']]=row\nprint(sorted(target.values(),key=lambda r:r['id']))",
+      "expected": "[{'id': 1, 'amount': 12}, {'id': 2, 'amount': 7}]",
+      "hint": "Use a stable key and overwrite/upsert rather than blindly appending.",
+      "explanation": "Idempotency makes retries and backfills safer."
+    },
+    {
+      "id": 27,
+      "title": "SQL: parameterized query",
+      "level": "Intermediate",
+      "category": "SQL/PostgreSQL",
+      "prompt": "Construct a safe parameterized query pattern (no live database in browser).",
+      "starter": "query = 'SELECT order_id, amount FROM orders WHERE amount >= %s'\nparams = (100,)\nprint(query)\nprint('params:', params)",
+      "expected": "SELECT order_id, amount FROM orders WHERE amount >= %s\nparams: (100,)",
+      "hint": "Keep values separate from SQL text using your driver's parameter syntax.",
+      "explanation": "Never interpolate untrusted values into SQL strings."
+    },
+    {
+      "id": 28,
+      "title": "PostgreSQL: transaction logic",
+      "level": "Advanced",
+      "category": "SQL/PostgreSQL",
+      "prompt": "Model commit vs rollback based on validation outcome.",
+      "starter": "rows=[{'id':1,'amount':5},{'id':2,'amount':-1}]\nvalid=all(r['amount']>=0 for r in rows)\nif valid: print('COMMIT')\nelse: print('ROLLBACK: invalid amount')",
+      "expected": "ROLLBACK: invalid amount",
+      "hint": "Validate before committing a transaction.",
+      "explanation": "A real psycopg connection needs try/except and explicit transaction handling."
+    },
+    {
+      "id": 29,
+      "title": "Parquet: columnar workflow",
+      "level": "Intermediate",
+      "category": "Parquet",
+      "prompt": "Demonstrate a Parquet workflow decision and schema check.",
+      "starter": "columns={'order_id':'int64','amount':'float64','event_date':'datetime64[ns]'}\nrequired={'order_id','amount'}\nprint('schema_ok:', required.issubset(columns))\nprint('format: parquet | compression: snappy')",
+      "expected": "schema_ok: True\nformat: parquet | compression: snappy",
+      "hint": "Use pandas.read_parquet()/to_parquet() with pyarrow or fastparquet in a local environment.",
+      "explanation": "PyArrow/Parquet binaries are not guaranteed in the browser runner; this is a schema-focused exercise."
+    },
+    {
+      "id": 30,
+      "title": "Automation: date partition",
+      "level": "Intermediate",
+      "category": "Automation",
+      "prompt": "Generate a date-partitioned output path from a run date.",
+      "starter": "from datetime import date\nrun_date=date(2026,10,29)\npath=f'warehouse/orders/year={run_date:%Y}/month={run_date:%m}/day={run_date:%d}/part-000.csv'\nprint(path)",
+      "expected": "warehouse/orders/year=2026/month=10/day=29/part-000.csv",
+      "hint": "Format the date into stable partition keys.",
+      "explanation": "Partitioning supports incremental reads and lifecycle management."
+    }
+  ],
+  "projects": [
+    {
+      "title": "Project 1 — Orders CSV to clean analytics table",
+      "level": "Beginner",
+      "goal": "Ingest raw orders, normalize fields, reject invalid amounts, and write a clean CSV plus a quality summary.",
+      "steps": [
+        "Read orders_raw.csv with csv.DictReader.",
+        "Normalize customer email and parse amount/date.",
+        "Route invalid records to rejects.csv.",
+        "Aggregate revenue by region.",
+        "Write clean_orders.csv and quality_summary.json."
+      ],
+      "input": "orders_raw.csv",
+      "expected": "3 valid orders, 1 rejected row; revenue by region: East 125.50, West 80.00.",
+      "skills": "CSV, validation, rejects, aggregation, output files"
+    },
+    {
+      "title": "Project 2 — REST API ingestion with pagination",
+      "level": "Intermediate",
+      "goal": "Ingest paginated JSON payloads, normalize records, and make retries bounded and observable.",
+      "steps": [
+        "Use the provided API response fixtures (no live network in sandbox).",
+        "Iterate page tokens until next_page is null.",
+        "Validate required fields and deduplicate by record_id.",
+        "Record request attempts, row counts, and rejects in a run summary.",
+        "Write normalized JSON Lines output."
+      ],
+      "input": "api_pages.json",
+      "expected": "4 unique records, 1 invalid record in rejects; next_page ends at null.",
+      "skills": "JSON, API response parsing, pagination, retries, logging"
+    },
+    {
+      "title": "Project 3 — Pandas customer 360",
+      "level": "Intermediate",
+      "goal": "Clean customer and order tables, join dimensions, and produce customer-level metrics.",
+      "steps": [
+        "Load customers.csv and orders.csv with pandas.",
+        "Standardize column names and parse dates.",
+        "Fill missing customer names only with an explicit documented rule.",
+        "Left-join orders to customers and report unmatched customer IDs.",
+        "Aggregate lifetime spend and order count."
+      ],
+      "input": "customers.csv + orders.csv",
+      "expected": "All orders retained; unmatched keys are reported; customer spend is sorted descending.",
+      "skills": "Pandas, joins, null handling, groupby, data quality"
+    },
+    {
+      "title": "Project 4 — PostgreSQL warehouse loader",
+      "level": "Advanced",
+      "goal": "Build a local Python loader that upserts clean rows into PostgreSQL safely.",
+      "steps": [
+        "Install psycopg in a local Python environment and connect using environment variables.",
+        "Create a staging table and validate input types before loading.",
+        "Use parameterized SQL and a transaction.",
+        "Upsert by order_id using ON CONFLICT.",
+        "Rollback on invalid rows and log row counts without secrets."
+      ],
+      "input": "clean_orders.csv",
+      "expected": "Re-running the same batch does not duplicate order_id values; invalid batch rolls back.",
+      "skills": "PostgreSQL, psycopg, transactions, upserts, secret hygiene"
+    },
+    {
+      "title": "Project 5 — Partitioned Parquet batch pipeline",
+      "level": "Advanced",
+      "goal": "Create a date-partitioned Parquet dataset with schema checks and incremental processing.",
+      "steps": [
+        "Read a sample orders dataset with pandas.",
+        "Parse event_date and quarantine invalid dates.",
+        "Filter records beyond a stored watermark, with a late-arrival policy.",
+        "Write partitioned Parquet using pyarrow and compression.",
+        "Emit a JSON quality report and structured logs."
+      ],
+      "input": "orders_events.csv",
+      "expected": "Partitions follow year/month/day; reruns are idempotent; invalid dates are quarantined.",
+      "skills": "Parquet, PyArrow, incremental loads, partitioning, quality gates"
+    }
+  ]
+}

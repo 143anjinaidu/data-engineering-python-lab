@@ -1,0 +1,4 @@
+2026-10-28 INFO extract started
+2026-10-28 WARN retrying source
+
+2026-10-28 INFO extract complete

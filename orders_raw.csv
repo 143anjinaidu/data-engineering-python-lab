@@ -1,0 +1,5 @@
+order_id,customer_email,region,amount,order_date
+1001, ASHA@example.com ,East,100.50,2026-10-28
+1002,ravi@example.com,West,80.00,2026-10-28
+1003,meera@example.com,East,25.00,2026-10-29
+1004,,East,not-a-number,not-a-date

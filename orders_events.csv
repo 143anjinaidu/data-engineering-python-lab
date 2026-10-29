@@ -1,0 +1,4 @@
+event_id,event_date,order_id,amount
+E1,2026-10-28,1001,100.50
+E2,2026-10-29,1002,80.00
+E3,bad-date,1003,25.00
